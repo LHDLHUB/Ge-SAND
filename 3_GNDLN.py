@@ -15,11 +15,9 @@ class MyDataset(Dataset):
         self.data_tensor = x
         self.target_tensor = y
 
-    # 返回数据集大小
     def __len__(self):
         return self.data_tensor.size(0)
 
-    # 返回索引的数据与标签
     def __getitem__(self, index):
         return self.data_tensor[index], self.target_tensor[index]
 
@@ -44,17 +42,14 @@ def softsign_activation(x):
     return x / (1 + np.absolute(x))
 
 def x_2_softsign_activation_prime(x):
-    X_less_than_1 = np.abs(x) < 1  # 找到X中小于1的元素
-    X_greater_eq_than_1 = np.logical_not(X_less_than_1)  # 找到X中大于等于1的元素
+    X_less_than_1 = np.abs(x) < 1  
+    X_greater_eq_than_1 = np.logical_not(X_less_than_1) 
 
-    Y = np.zeros(x.shape)  # 创建结果数组Y
+    Y = np.zeros(x.shape)  
 
-    # 当X中的元素小于1时,使用f(x) =  2 / π / √(1 - x^2)
     Y[X_greater_eq_than_1] = 1
 
-    # 当X中的元素大于等于1时,使用f'(x) = (1 - x^2) / (1 + |x|)^2
     Y[X_less_than_1] = 2 / (1 + np.absolute(x[X_less_than_1]))**2
-    #Y[X_greater_eq_than_1] = 3 * x[X_greater_eq_than_1] * x[X_greater_eq_than_1]
     return Y
 
 
@@ -68,30 +63,16 @@ def arcsine_prime(x):
     return 2 / np.pi / np.sqrt(1 - x**2 + 0.000000001)
 
 def arcsine_softsign_prime(x):
-    X_less_than_1 = np.abs(x) < 1  # 找到X中小于1的元素
-    X_greater_eq_than_1 = np.logical_not(X_less_than_1)  # 找到X中大于等于1的元素
+    X_less_than_1 = np.abs(x) < 1  
+    X_greater_eq_than_1 = np.logical_not(X_less_than_1)  
 
-    Y = np.zeros(x.shape)  # 创建结果数组Y
+    Y = np.zeros(x.shape)  
 
     Y[X_less_than_1] = 2 / np.pi / np.sqrt(1 - x[X_less_than_1] ** 2)
 
     Y[X_greater_eq_than_1] = 1
     return Y
 
-def arcsine_softsign(x):
-    X_less_than_1 = x < 1  # 找到X中小于1的元素
-    X_greater_eq_than_1 = np.logical_not(X_less_than_1)  # 找到X中大于等于1的元素
-
-    Y = np.zeros(x.shape)  # 创建结果数组Y
-
-    # 当X中的元素小于1时,使用f(x) =  2 / π / √(1 - x^2)
-    Y[X_less_than_1] = 2 / np.pi * np.arcsin(x[X_less_than_1])
-
-    # 当X中的元素大于等于1时,使用f'(x) = (1 - x^2) / (1 + |x|)^2
-    Y[X_greater_eq_than_1] = x[X_greater_eq_than_1] / (1 + np.absolute(x[X_greater_eq_than_1]))
-
-
-    return Y
 def MCC_calculate(output_temp, threshold, target):
     pred = torch.tensor(np.where(output_temp.cpu().numpy() > threshold, 1, 0).astype(int))
     # 计算TP, FP, FN, TN
@@ -224,7 +205,7 @@ def train(w1, w2, epoch, train_dataloader, num_bag):
 
     running_loss = 0.0
     with torch.no_grad():
-        for batch_idx, data in enumerate(train_dataloader, 0):  # 在这里data返回输入:inputs、输出target
+        for batch_idx, data in enumerate(train_dataloader, 0):  
             inputs, target = data
             if torch.cuda.is_available():
                 inputs = inputs.cuda()
@@ -257,12 +238,12 @@ def train(w1, w2, epoch, train_dataloader, num_bag):
 def test(w1, w2, AUC, dataloader_validate, num_bag, best_model, best, bestsigma):
     random.seed(seed)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    with torch.no_grad():  # 不需要计算梯度
+    with torch.no_grad():  
         test_output_get = torch.tensor([]).to(device)
         test_target_output_get = torch.tensor([]).to(device)
         test_output_get_auc = torch.tensor([])
-        for data in dataloader_validate:  # 遍历数据集中的每一个batch
-            images, labels = data  # 保存测试的输入和输出
+        for data in dataloader_validate:  
+            images, labels = data  
             if torch.cuda.is_available():
                 images = images.cuda()
                 labels = labels.cuda()
@@ -295,8 +276,8 @@ def test(w1, w2, AUC, dataloader_validate, num_bag, best_model, best, bestsigma)
 def train_and_test(n_bag, batch_size, best, bestsigma):
     random.seed(seed)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    w1 = np.random.rand(n_bag, hidden_size, 64) # 权重矩阵1,大小64x16,值在-1到1之间
-    w2 = np.random.rand(n_bag, 64, 1)# 权重矩阵1,大小64x16,值在-1到1之间
+    w1 = np.random.rand(n_bag, hidden_size, 64) 
+    w2 = np.random.rand(n_bag, 64, 1)
     bag_sets = []
     validate_sets = []
     for i in range(int(n_bag)):
