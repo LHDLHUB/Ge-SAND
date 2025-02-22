@@ -75,9 +75,9 @@ def accuracy_cal(output, target, output_auc, key):
         if os.path.isdir('./%s/'%key) == False:
             os.makedirs('./%s/'%key)
 
-        ##ROC曲线
+        ##ROC
         fpr, tpr, thresholds = roc_curve(target.cpu().numpy(), output_auc.cpu().numpy())
-        plt.figure()##保证图与图之间分开
+        plt.figure()##
         plt.plot(fpr, tpr)
         plt.text(0.5, 0.5, 'AUC=%.3f' % AUC)
         plt.xlabel('False Positive Rate')
@@ -124,7 +124,7 @@ def accuracy_cal(output, target, output_auc, key):
         best_F1_SCORES_threshold = thresholds[best_F1_SCORES_idx]
         print("best_F1_SCORES", F1_SCORES[best_F1_SCORES_idx])
         print("best_F1_SCORES_idx_threshold", best_F1_SCORES_threshold)
-        ###KS曲线
+        ###KS
         ks = np.max(tpr - fpr)
         plt.figure()
         plt.plot(thresholds, tpr, label='TPR')
@@ -138,10 +138,10 @@ def accuracy_cal(output, target, output_auc, key):
         plt.savefig('./%s/KS.png'%key)
         print("~~KS~~", ks)
 
-        ###PR曲线
+        ###PR
         precision, recall, _ = precision_recall_curve(target.cpu().numpy(), output_auc.cpu().numpy())
         ap = average_precision_score(target.cpu().numpy(), output_auc.cpu().numpy())
-        plt.figure()##保证图与图之间分开
+        plt.figure()#
         plt.plot(recall, precision)
         plt.text(0.5, 0.5, 'AP=%.3f' % ap)
         plt.xlabel('Recall')
@@ -158,16 +158,16 @@ class MyDataset(Dataset):
         self.data_tensor = x
         self.target_tensor = y
 
-    # 返回数据集大小
+    
     def __len__(self):
         return len(self.data_tensor)
 
-    # 返回索引的数据与标签
+
     def __getitem__(self, index):
         return self.data_tensor[index], self.target_tensor[index]
 
-type_list = ["30%", "50%", "70%", "100%"]
-word_embedding_prob_list = [1 / 3, 1 / 2, 0.75, 1]
+type_list = ["30%"]
+word_embedding_prob_list = [1 / 3]
 
 
 max_word_length = 2189
@@ -241,9 +241,9 @@ for i in range(1):
     criterion = torch.nn.BCELoss(reduction="mean")
     ###############
 
-    with torch.no_grad():  # 不需要计算梯度
-        for data in tensor_dataloader_test:  # 遍历数据集中的每一个batch
-            images, labels = data  # 保存测试的输入和输出
+    with torch.no_grad():  # 
+        for data in tensor_dataloader_test:  # 
+            images, labels = data  # 
             test_set = torch.tensor([]).to(device)
             segments_set = torch.tensor([]).to(device)
 
@@ -316,7 +316,7 @@ for i in range(1):
 
 
 
-            #################################模型测试并获得输出
+            ########
             test_set = torch.tensor(test_set, dtype=torch.int).long().to(device)
             segments_set = torch.tensor(segments_set, dtype=torch.int).long().to(device)
             #print(test_set)
@@ -328,12 +328,9 @@ for i in range(1):
 
 
             ##############输出分数矩阵
-            # 获取attention scores
-            # 移除钩子函数
             handle_query.remove()
             handle_key.remove()
 
-            # 取最后一个输入的attention矩阵
 
             attn_matrix_query = attentions_query[0]
             attn_matrix_key = attentions_key[0]
@@ -356,7 +353,7 @@ for i in range(1):
 
             prediction_1_token = predictions_1[:, 1:-1, :]
 
-            outputs = logistic_best(prediction_1_token)  # 得到预测输出
+            outputs = logistic_best(prediction_1_token)  
 
             loss = criterion(outputs, labels)
 
