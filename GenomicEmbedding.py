@@ -11,14 +11,14 @@ class GenomicEmbedding(BertEmbeddings):
     def __init__(self, config):
         super().__init__(config)
 
-        # 处理自定义的词嵌入概率
+        # Handling custom word embedding probability
         self.word_embeddings = nn.Embedding(
             config.vocab_size,
             round(config.hidden_size * config.word_embedding_prob),
             padding_idx=config.pad_token_id
         )
         self.pattern = config.pattern
-        # 自定义的位置嵌入，基于配置中的 pattern 和其他参数
+        # Custom position embeddings based on pattern and other parameters in the configuration
         if config.word_embedding_prob != 1 and config.pattern == 2:
             self.position_embeddings_chrome = nn.Embedding(config.max_chrom, config.hidden_size - round(
                 config.hidden_size * config.word_embedding_prob))
@@ -29,19 +29,19 @@ class GenomicEmbedding(BertEmbeddings):
             self.position_embeddings = nn.Embedding(config.max_position_embeddings, config.hidden_size - round(
                 config.hidden_size * config.word_embedding_prob))
 
-        # 额外的线性层和激活函数
+        # Additional linear layer and activation function
         self.Linear = nn.Linear(config.hidden_size, config.hidden_size)
         self.tanh = nn.Tanh()
 
-        # LayerNorm 和 Dropout
+        # LayerNorm and Dropout
         self.LayerNorm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
 
-        # 注册 position_ids 和 token_type_ids（如父类所示）
+        # Register position_ids and token_type_ids (as shown in the parent class)
         self.position_embedding_type = getattr(config, "position_embedding_type", "absolute")
         self.register_buffer("position_ids", torch.arange(config.max_position_embeddings).expand((1, -1)))
 
-        # 处理 token_type_ids（如果需要）
+        # Handle token_type_ids (if needed)
         if version.parse(torch.__version__) > version.parse("1.6.0"):
             self.register_buffer(
                 "token_type_ids",
@@ -73,7 +73,7 @@ class GenomicEmbedding(BertEmbeddings):
 
         embeddings = inputs_embeds
 
-        # 添加自定义位置嵌入
+        # Add custom position embeddings
         if self.position_embedding_type == "absolute":
             if self.pattern == 2:
                 chrome_tensor = torch.tensor(torch.load("./chrom_names.ped")).cuda()
@@ -83,12 +83,12 @@ class GenomicEmbedding(BertEmbeddings):
 
             if self.pattern == 1:
                 position_embeddings = (self.position_embeddings(position_ids)).expand(embeddings.shape[0], -1, -1)
-            embeddings = torch.cat([position_embeddings, embeddings], dim=2)  # 拼接位置和词嵌入
+            embeddings = torch.cat([position_embeddings, embeddings], dim=2)  # Concatenate position and word embeddings
 
-            embeddings = self.Linear(embeddings)  # 线性变换
-            embeddings = self.tanh(embeddings)  # 激活函数
+            embeddings = self.Linear(embeddings)  # Linear transformation
+            embeddings = self.tanh(embeddings)  # Activation function
 
-        # 执行 LayerNorm 和 Dropout
+        # Apply LayerNorm and Dropout
         embeddings = self.LayerNorm(embeddings)
         embeddings = self.dropout(embeddings)
 
