@@ -116,7 +116,7 @@ def save_BERT_CSP(description_sentence, name):
 
         prediction_1_token = predictions_1[:, 1:-1, :]
 
-        _, outputs= model_classify(prediction_1_token)  # 得到预测输出
+        _, outputs= model_classify(prediction_1_token)
         outputs_saved = outputs.detach().cpu().numpy().tolist()
         prediction_1_token_all_mean.append(outputs_saved)
 
@@ -140,7 +140,6 @@ if __name__ == "__main__":
     config = BertConfig.from_json_file('./config.bin')
     #
 
-    #################
     bim_path = "./final_5000_snp.bim"
     with open(bim_path, 'r') as f:
         line_count = sum(1 for line in f)
@@ -163,7 +162,6 @@ if __name__ == "__main__":
     model_classify = ELBCN(config.hidden_size, config.max_position_embeddings).to(device)
     model_classify.load_state_dict(torch.load('ELBCN_Best.pth', map_location='cuda:0'))
 
-    ##########导入数据
     df = torch.load('./train_set_torch')
     description_sentence1 = df[0].tolist()
     description_sentence1 = [' '.join(map(str, x)) for x in description_sentence1]
@@ -175,7 +173,6 @@ if __name__ == "__main__":
     description_sentence3 = [' '.join(map(str, x)) for x in description_sentence3]
     accurracy_all_list = []
 
-    ##########读取句子并输入到BERT，获得最后一层隐藏层输出的[CSP]数据，并保存
 
     description_sentence = [description_sentence1, description_sentence2, description_sentence3]
     names = ["training", "validating", "testing"]
