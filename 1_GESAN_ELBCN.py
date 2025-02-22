@@ -66,9 +66,9 @@ def accuracy_cal(output, target, output_auc, key):
 
     if key == "test":
 
-        ##ROC曲线
+        ##ROC
         fpr, tpr, thresholds = roc_curve(target.cpu().numpy(), output_auc.cpu().numpy())
-        plt.figure()##保证图与图之间分开
+        plt.figure()
         plt.plot(fpr, tpr)
         plt.text(0.5, 0.5, 'AUC=%.3f' % AUC)
         plt.xlabel('False Positive Rate')
@@ -76,10 +76,10 @@ def accuracy_cal(output, target, output_auc, key):
         plt.title('ROC Curve')
         plt.legend(loc="lower right")
         plt.savefig('roc.png')
-        ###PR曲线
+        ###PR
         precision, recall, thresholds = precision_recall_curve(target.cpu().numpy(), output_auc.cpu().numpy())
         ap = average_precision_score(target.cpu().numpy(), output_auc.cpu().numpy())
-        plt.figure()##保证图与图之间分开
+        plt.figure()
         plt.plot(recall, precision)
         plt.text(0.5, 0.5, 'AP=%.3f' % ap)
         plt.xlabel('Recall')
@@ -87,7 +87,7 @@ def accuracy_cal(output, target, output_auc, key):
         plt.title('PR Curve')
         plt.legend(loc="lower right")
         plt.savefig('PR.png')
-        ###KS曲线
+        ###KS
         ks = np.max(tpr - fpr)
         plt.figure()
         plt.plot(thresholds, tpr, label='TPR')
@@ -108,11 +108,9 @@ class MyDataset(Dataset):
         self.data_tensor = x
         self.target_tensor = y
 
-    # 返回数据集大小
     def __len__(self):
         return len(self.data_tensor)
 
-    # 返回索引的数据与标签
     def __getitem__(self, index):
         return self.data_tensor[index], self.target_tensor[index]
 
@@ -395,9 +393,6 @@ if __name__ == '__main__':
     running_loss_max = 1000000
     train_and_test(AUC_get, running_loss_max)
 
-    ######################
-
-    #cluster_model()
 
 
 
