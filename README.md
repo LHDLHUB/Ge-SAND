@@ -9,7 +9,7 @@ The repository includes the following files for model training, testing, and eva
 - **0_GESAN_FLBCN.py**: Implements the genomic embedding self-attention network (GESAN) + the fundamental-level binary classification network (FLBCN) combination.
 - **1_GESAN_ELBCN.py**: Implements the GESAN + the enhanced-level binary classification network combination.
 - **2_features_extraction.py**: Handles feature extraction from genetic data.
-- **3_GNDLN.py**: Implements the Genomic neurodynamic leaning network (GNDLN).
+- **3_GNLN.py**: Implements the Genomic neurodynamic leaning network (GNLN).
 - **GeSAND.py**: Main script for the Ge-SAND framework.
 - **GenomicEmbedding.py**: Defines the custom genomic embedding method used in the framework.
 - **README.md**: Documentation for using the repository and framework.
@@ -32,7 +32,7 @@ Once the necessary datasets are prepared, follow these steps in sequence:
 1. Run **0_GESAN_FLBCN.py**: This script trains the GESAN model combined with the FLBCN architecture.
 2. Run **1_GESAN_ELBCN.py**: This script trains the GESAN model combined with the ELBCN architecture.
 3. Run **2_features_extraction.py**: Extract features from the genetic data for further processing.
-4. Run **3_GNDLN.py**: Train the Genomic neurodynamic leaning network (GNDLN).
+4. Run **3_GNDLN.py**: Train the Genomic neurodynamic leaning network (GNLN).
    
 After running these scripts, the model will be trained, and you can proceed to the evaluation phase.
 
