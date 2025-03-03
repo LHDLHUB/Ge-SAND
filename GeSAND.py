@@ -1,4 +1,4 @@
-# 导入依赖
+
 import torch
 import torch.nn as nn
 from GenomicEmbedding import GenomicEmbedding
